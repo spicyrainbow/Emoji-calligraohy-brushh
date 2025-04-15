@@ -1,0 +1,73 @@
+<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>
+
+Emoji calligraphy Pen! 
+Hold mouse for longer to create dark, thick brush strokes, and move mouse faster to make thin light strokes.
+<script> 
+/*global nn*/
+
+let mouseDownTime = 0
+    
+let prevX = 0
+let prevY = 0
+
+nn.on('mousedown', () => {
+  mouseDownTime = Date.now()
+})
+
+nn.on('mouseup', () => {
+  mouseDownTime = 0
+})
+
+function emoji () {
+  setTimeout(emoji, 15)
+
+  
+  const lightStroke = ['🔅', '⚡️', '✨', '🕯️', '💡', '✌️', '🪿', '🍌', '🍦']
+  const HardStroke = ['🩻', '🌊', '🏙️', '🌎', '🧿', '🚝']
+  const middle = [ '🌿', '🧼', '🪣', '🍏', '🐸', '🥝', '🧤', '🪴', '💚' ]
+
+  // To Track movement speed
+  const dx = nn.mouseX - prevX
+  const dy = nn.mouseY - prevY
+  const distance = Math.sqrt(dx * dx + dy * dy)
+
+  prevX = nn.mouseX
+  prevY = nn.mouseY
+
+  let selectedSet = middle
+
+  if (mouseDownTime > 0) {
+    const holdDuration = Date.now() - mouseDownTime
+
+    if (holdDuration > 1000 && distance < 5) {
+      selectedSet = HardStroke
+    } else if (distance > 8) {
+      selectedSet = lightStroke
+    }
+  }
+
+  const ranEmoji = nn.random(selectedSet)
+
+  const css = {
+    position: 'absolute',
+    left: nn.mouseX,
+    top: nn.mouseY
+  }
+
+  if (nn.mouseDown) {
+    nn.create('span')
+      .content(ranEmoji)
+      .css(css)
+      .addTo('body')
+  }
+}
+
+nn.on('load', emoji)
+
+</script>
+
+<style>
+  body {
+    background-color: #FF54C0; 
+  }
+</style>
